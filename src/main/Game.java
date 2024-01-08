@@ -2,6 +2,7 @@ package main;
 
 import inputs.KeyboardListener;
 import inputs.MyMouseListener;
+import scenes.GameOver;
 import scenes.Menu;
 import scenes.Playing;
 import scenes.Settings;
@@ -17,8 +18,6 @@ public class Game extends JFrame implements Runnable {
     private final double FPSset=120.0;
     private final double UPSset=60.0;
 
-    private MyMouseListener MyMouseListener;
-    private KeyboardListener keyBoardListener;
 
 
 
@@ -28,6 +27,7 @@ public class Game extends JFrame implements Runnable {
     private Menu menu;
     private Playing playing;
     private Settings settings;
+    private GameOver gameOver;
 
 
 
@@ -35,6 +35,7 @@ public class Game extends JFrame implements Runnable {
 
         setSize(1024,768);
         setResizable(false);
+        setTitle("Obrona");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         initClasses();
@@ -49,6 +50,7 @@ public class Game extends JFrame implements Runnable {
         menu = new Menu(this);
         playing = new Playing(this);
         settings= new Settings(this);
+        gameOver=new GameOver(this);
     }
 
     public Menu getMenu() {
@@ -65,17 +67,7 @@ public class Game extends JFrame implements Runnable {
     }
 
 
-    private void initInputs(){
-        MyMouseListener = new MyMouseListener();
-        keyBoardListener = new KeyboardListener();
 
-        addMouseListener(MyMouseListener);
-        addMouseMotionListener(MyMouseListener);
-        addKeyListener(keyBoardListener);
-
-        requestFocus();
-
-    }
 
 
 
@@ -85,6 +77,19 @@ public class Game extends JFrame implements Runnable {
 
     }
 
+    private void updateGame(){
+        switch(GameStates.gameState){
+
+            case PLAYING:
+                playing.update();
+                break;
+            case MENU:
+                break;
+            case SETTINGS:
+                break;
+        }
+    }
+
 
 
 
@@ -92,7 +97,7 @@ public class Game extends JFrame implements Runnable {
     public static void main(String[] args) {
 
         Game game = new Game();
-        game.initInputs();
+        game.gameScreen.initInputs();
         game.start();
 
         }
@@ -122,11 +127,12 @@ public class Game extends JFrame implements Runnable {
                 frames++;
             }
             if(now-lastUpdate >=timePerUpdate){
+                updateGame();
                 lastUpdate=now;
                 updates++;
             }
             if (System.currentTimeMillis()-lastTimeCheck>=1000){
-                System.out.println("FPS: "+frames+" | UPS: "+updates);
+                //System.out.println("FPS: "+frames+" | UPS: "+updates);
                 frames=0;
                 updates=0;
                 lastTimeCheck = System.currentTimeMillis();
@@ -139,5 +145,9 @@ public class Game extends JFrame implements Runnable {
     }
     public Render getRender(){
         return render;
+    }
+
+    public GameOver getGameOver() {
+        return gameOver;
     }
 }
